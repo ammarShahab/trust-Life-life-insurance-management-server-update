@@ -14,12 +14,11 @@ const policySchema = new mongoose.Schema(
       trim: true,
       enum: {
         values: [
+          "all",
+          "Term Life",
           "Senior Plan",
           "Family Plan",
-          "Individual Plan",
           "Child Plan",
-          "Term Life",
-          "Whole Life",
         ],
         message: "Category '{VALUE}' is not supported",
       },
