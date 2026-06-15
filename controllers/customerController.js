@@ -1,4 +1,3 @@
-// controllers/customerController.js
 const Customer = require("../models/customer.js");
 
 // @desc    Register or find a customer (called after Firebase auth)

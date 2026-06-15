@@ -1,5 +1,3 @@
-// models/Customer.js
-
 const { default: mongoose } = require("mongoose");
 
 const customerSchema = new mongoose.Schema(
