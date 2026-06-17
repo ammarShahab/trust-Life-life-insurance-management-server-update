@@ -22,7 +22,11 @@ const createApplication = async (req, res) => {
     const newApplication = new Application(applicationData);
     const savedApplication = await newApplication.save();
 
-    res.status(201).json(savedApplication);
+    // Return insertedId to match frontend expectation
+    res.status(201).json({
+      insertedId: savedApplication._id,
+      ...savedApplication.toObject(), // Spread all other fields too
+    });
   } catch (error) {
     console.error("Error saving application:", error);
 
