@@ -7,34 +7,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // @desc    Create Stripe Payment Intent (before confirming payment)
 // @route   POST /create-payment-intent
 // @access  Public (called from frontend before payment)
-/* const createPaymentIntent = async (req, res) => {
-  try {
-    const { amount, paymentDuration } = req.body;
-    console.log("Received body:", req.body);
-
-    // Stripe expects amount in smallest currency unit (cents for USD)
-    const paymentIntent = await req.app.locals.stripe.paymentIntents.create({
-      amount: amount,
-      currency: "usd",
-      payment_method_types: ["card"],
-      metadata: {
-        paymentDuration: paymentDuration || "monthly",
-      },
-    });
-
-    res.status(200).json({ clientSecret: paymentIntent.client_secret });
-  } catch (error) {
-    console.error("Stripe Payment Intent Error:", error);
-    res.status(500).json({ error: error.message });
-  }
-}; */
-
 const createPaymentIntent = async (req, res) => {
   try {
     const { amount, paymentDuration } = req.body;
     console.log("Received body:", req.body);
 
-    const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntent = await req.app.locals.stripe.paymentIntents.create({
       amount: amount,
       currency: "usd",
       payment_method_types: ["card"],
@@ -99,7 +77,11 @@ const savePayment = async (req, res) => {
     const newPayment = new Payment(paymentData);
     const savedPayment = await newPayment.save();
 
-    res.status(201).json(savedPayment);
+    // Return insertedId to match frontend expectation
+    res.status(201).json({
+      insertedId: savedPayment._id,
+      ...savedPayment.toObject(), // Spread all other fields too
+    });
   } catch (error) {
     console.error("Payment processing error:", error);
 

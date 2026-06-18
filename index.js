@@ -11,8 +11,14 @@ const blogRoutes = require("./routes/blogRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const newsletterRoutes = require("./routes/newsletterRoutes");
 
+const Stripe = require("stripe");
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Attach Stripe to app.locals for use in controllers
+app.locals.stripe = stripe;
 
 // ========== Firebase Admin Setup ==========
 const decodedKey = Buffer.from(process.env.FB_SERVICE_KEY, "base64").toString(
