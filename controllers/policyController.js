@@ -160,6 +160,44 @@ const updatePolicy = async (req, res) => {
   }
 };
 
+// @desc    Search policies with full-text search and sorting
+// @route   GET /policies/search
+// @access  Public
+const searchPolicies = async (req, res) => {
+  try {
+    const { search, sortBy, sortOrder, page = 1, limit = 20 } = req.query;
+
+    // Validate sortBy field
+    const validSortFields = ["title", "premium", "purchasedCount", "createdAt"];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : "createdAt";
+
+    // Validate sortOrder
+    const order = sortOrder === "desc" ? -1 : 1;
+
+    // Build query with text search
+    let query = Policy.find({});
+
+    if (search && search.trim() !== "") {
+      // Use MongoDB text index for full-text search
+      query = query.find({ $text: { $search: search.trim() } });
+    }
+
+    // Get total count before pagination
+    const total = await query.clone().countDocuments();
+
+    // Apply sorting and pagination
+    const policies = await query
+      .sort({ [sortField]: order })
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+
+    res.status(200).json({ policies, total });
+  } catch (error) {
+    console.error("Error searching policies:", error);
+    res.status(500).json({ error: "Failed to search policies" });
+  }
+};
+
 // @desc    Delete a policy
 // @route   DELETE /policies/:id
 // @access  Admin only
@@ -197,4 +235,5 @@ module.exports = {
   getPolicyById,
   updatePolicy,
   deletePolicy,
+  searchPolicies,
 };

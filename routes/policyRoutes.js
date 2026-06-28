@@ -8,6 +8,7 @@ const {
   getPolicyById,
   updatePolicy,
   deletePolicy,
+  searchPolicies,
 } = require("../controllers/policyController.js");
 const verifyFBToken = require("../middleware/verifyFBToken.js");
 
